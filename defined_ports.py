@@ -283,5 +283,13 @@ registered_ports = {
     365: {'Name': 'DTK'},
     366: {'Name': 'ODMR'},
     367: {'Name': 'MortgageWare'},
+    368: {'Name': 'QbikGDP'},
+    369: {'Name': 'rpc2portmap'},
+    370: {'Name': 'codaauth2'},
+    371: {'Name': 'Clearcase'},
+    372: {'Name': 'ListProcessor'},
+    373: {'Name': 'Legent Corporation'},
+    374: {'Name': 'Legent Corporation'},
+    375: {'Name': 'Hassle'},
 
 }
