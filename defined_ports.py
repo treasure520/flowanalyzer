@@ -278,4 +278,10 @@ registered_ports = {
     360: {'Name': 'scoi2odialog'},
     361: {'Name': 'Semantix'},
     362: {'Name': 'SRS Send'},
+    363: {'Name': 'RSVP Tunnel'},
+    364: {'Name': 'Aurora CMGR'},
+    365: {'Name': 'DTK'},
+    366: {'Name': 'ODMR'},
+    367: {'Name': 'MortgageWare'},
+
 }
