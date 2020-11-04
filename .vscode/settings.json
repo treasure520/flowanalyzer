@@ -9,7 +9,7 @@
     "editor.tabSize": 4,
     "[python]": {
         "editor.formatOnType": true,
-        "editor.formatOnSave": true,
+        //"editor.formatOnSave": true,
         "editor.renderIndentGuides": true,
     }
 }

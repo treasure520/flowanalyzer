@@ -27,7 +27,7 @@ class name_lookups(object):
         '224.0.0.18': 'VRRP Multicast',
         '224.0.0.19': 'IS-IS Multicast',
         '224.0.0.20': 'IS-IS Multicast',
-        '224.0.0.21': 'IS-IS Multicsast',
+        '224.0.0.21': 'IS-IS Multicast',
         '224.0.0.22': 'IGMPv3 Multicast',
         '224.0.0.102': 'HSRPv2 Multicast',
         '224.0.0.252': 'Link-local Multicast Name Resolution',
@@ -49,14 +49,14 @@ class name_lookups(object):
         'co.uk',  # United Kingdom
         'co.za',  # South Africa
         'com.ar',  # Argentina
-        'com.au',  # Australlia
+        'com.au',  # Australia
         'com.bn',  # Brunei
         'com.br',  # Brazil
         'com.cn',  # People's Republic of China
-        'con.gh',  # Ghana
+        'com.gh',  # Ghana
         'com.hk',  # Hong Kong
         'com.mx',  # Mexico
-        'com.sh',  # Singapore
+        'com.sg',  # Singapore
         'edu.au',  # Australia
         'net.au',  # Australia
         'net.il',  # Israel
@@ -86,8 +86,8 @@ class name_lookups(object):
             self.dns_cache[ip_addr]['Expires'] = int(self.time.time()) + 1800
 
             try:
-                ip_lookup = str(self.socket.getfqdn(
-                    ip_addr))  # Run reverse lookup
+                # Run reverse lookup
+                ip_lookup = str(self.socket.getfqdn(ip_addr))
             except Exception as lookup_message:  # DNS lookup failed
                 print(lookup_message)
                 return False
@@ -102,8 +102,7 @@ class name_lookups(object):
                     fqdn_exploded = ip_lookup.split('.')  # Blow it up
 
                     # Grab TLD and second-level domain
-                    domain = str(fqdn_exploded[-2]) + \
-                        '.' + str(fqdn_exploded[-1])
+                    domain = str(fqdn_exploded[-2]) + '.' + str(fqdn_exploded[-1])
 
                     # Check for .co.uk, .com.jp, etc…
                     if domain in self.second_level_domains:
@@ -149,7 +148,7 @@ class int_parse(object):
             field_size (int): Length of data to unpack
 
         Returns:
-            str: IPv4 Address
+            str: IPv4 address
         '''
         if field_size == 1:
             return self.unpack('!B', packed_data[pointer: pointer + field_size])[0]
@@ -191,8 +190,7 @@ class ip_parse(object):
         Returns:
             str: IPv4 Address
         '''
-        payload = self.socket.inet_ntoa(
-            packed_data[pointer: pointer + field_size])
+        payload = self.socket.inet_ntoa(packed_data[pointer: pointer + field_size])
         return payload
 
     # Unpack IPv6
@@ -213,8 +211,6 @@ class ip_parse(object):
         return payload
 
 ### Generic MAC Address Parsers ###
-
-
 class mac_address(object):
     import struct
 
@@ -235,7 +231,7 @@ class mac_address(object):
             '5855CA': {'Vendor': 'Apple', 'Type': 'Physical'},
             '74C63B': {'Vendor': 'AzureWave Technology', 'Type': 'Physical'},
             '74D435': {'Vendor': 'Giga-Byte Technology', 'Type': 'Physical'},
-            'FFFFFF': {'Vendor': 'Broadcasat', 'Type': 'Logical'},
+            'FFFFFF': {'Vendor': 'Broadcast', 'Type': 'Logical'},
         }
 
     # MAC passed as Python list, 6 elements
@@ -244,15 +240,14 @@ class mac_address(object):
         Parse MAC address passed as Python list(6) that has already been unpacked
 
         Args:
-            mac (list): List with (6) elemetns
+            mac (list): List with (6) elements
 
         Returns:
             tuple: (MAC Address:str, MAC OUI:str)
         '''
         mac_list = []
         for mac_item in mac:
-            mac_item_hex = hex(mac_item).replace(
-                '0x', '')  # Strip leading characters
+            mac_item_hex = hex(mac_item).replace('0x', '')  # Strip leading characters
             if len(mac_item_hex) == 1:
                 # Handle leading zeros and double-0's
                 mac_item_hex = str('0' + mac_item_hex)
@@ -265,7 +260,7 @@ class mac_address(object):
 
     def mac_packed_parse(self, packed_data: 'xdr', pointer: int, field_size: int) -> tuple:
         '''
-        Parse MAC addresses packed as packed bytes that first need to be unpacked
+        Parse MAC addresses passed as packed bytes that first need to be unpacked
 
         Args:
             packed_data (xdr): Packed XDR data
@@ -276,11 +271,9 @@ class mac_address(object):
             tuple: (MAC Address: str, MAC OUI: str)
         '''
         mac_list = []
-        mac_objects = self.struct.unpack(
-            '!%dB' % field_size, packed_data[pointer:pointer + field_size])
+        mac_objects = self.struct.unpack('!%dB' % field_size, packed_data[pointer:pointer + field_size])
         for mac_item in mac_objects:
-            mac_item_hex = hex(mac_item).replace(
-                '0x', '')  # Strip leading characters
+            mac_item_hex = hex(mac_item).replace('0x', '')  # Strip leading characters
             if len(mac_item_hex) == 1:
                 # Handle leading zeros and double-0's
                 mac_item_hex = str('0' + mac_item_hex)
@@ -294,7 +287,7 @@ class mac_address(object):
     # MAC OUI formatted '001122'
     def mac_oui(self, mac_oui_num: str) -> tuple:
         '''
-        Get MAC OUI (vendor, type) based on an OUI number formatted as '00aaAA'
+        Get MAC OUI (vendor, type) based on an OUI number formatted as '0011AA'
 
         Args:
             mac_oui_num (str): MAC OUI string eg 0011AA
@@ -308,8 +301,6 @@ class mac_address(object):
             return False
 
 ### Generic ICMP Parsers ###
-
-
 class icmp_parse(object):
     def __init__(self):
         # ICMP Types and corresponding Codes
@@ -326,8 +317,8 @@ class icmp_parse(object):
                     3: 'Port Unreachable',
                     4: 'Fragmentation Needed and Don\'t Fragment was Set',
                     5: 'Source Route Failed',
-                    6: 'Destination Network Unknow',
-                    7: 'Destination Host Unknow',
+                    6: 'Destination Network Unknown',
+                    7: 'Destination Host Unknown',
                     8: 'Source Host Isolated',
                     9: 'Communication with Destination Network is Administratively Prohibited',
                     10: 'Communication with Destination Host is Administratively Prohibited',
@@ -356,8 +347,8 @@ class icmp_parse(object):
             },
             7: {'Type': 'Unassigned'},
             8: {'Type': 'Echo', 'Codes': {0: 'No Codes'}},
-            9: {'TYpe': 'Router Advertisement', 'Codes': {0: 'No Codes'}},
-            10: {'TYpe': 'Router Selection', 'Codes': {0: 'No Codes'}},
+            9: {'Type': 'Router Advertisement', 'Codes': {0: 'No Codes'}},
+            10: {'Type': 'Router Selection', 'Codes': {0: 'No Codes'}},
             11: {
                 'Type': 'Time Exceeded',
                 'Codes': {
@@ -373,12 +364,12 @@ class icmp_parse(object):
                     2: 'Bad Length',
                 }
             },
-            13: {'Type': 'Timestamp', 'Codes': {0: 'No Codes'}},
-            14: {'Type': 'Timestamp Reply', 'Codes': {0: 'No Codes'}},
-            15: {'Type': 'Information Request', 'Codes': {0: 'No Codes'}},
-            16: {'Type': 'Information Reply', 'Codes': {0: 'No Codes'}},
-            17: {'Type': 'Address Mask Request', 'Codes': {0: 'No Codes'}},
-            18: {'Type': 'Address Mask Reply', 'Codes': {0: 'No Codes'}},
+            13: {'Type': 'Timestamp', 'Codes': {0: 'No Code'}},
+            14: {'Type': 'Timestamp Reply', 'Codes': {0: 'No Code'}},
+            15: {'Type': 'Information Request', 'Codes': {0: 'No Code'}},
+            16: {'Type': 'Information Reply', 'Codes': {0: 'No Coded'}},
+            17: {'Type': 'Address Mask Request', 'Codes': {0: 'No Code'}},
+            18: {'Type': 'Address Mask Reply', 'Codes': {0: 'No Code'}},
             19: {'Type': 'Reserved'},
             20: {'Type': 'Reserved'},
             21: {'Type': 'Reserved'},
@@ -390,7 +381,7 @@ class icmp_parse(object):
             27: {'Type': 'Reserved'},
             28: {'Type': 'Reserved'},
             29: {'Type': 'Reserved'},
-            30: {'Type': 'Reserved'},
+            30: {'Type': 'Traceroute'},
             31: {'Type': 'Datagram Conversion Error'},
             32: {'Type': 'Mobile Host Redirect'},
             33: {'Type': 'IPv6 Where-Are-You'},
@@ -443,8 +434,6 @@ class icmp_parse(object):
         return (icmp_num_type, icmp_num_code)
 
 ### Generic HTTP Parsers ###
-
-
 class http_parse(object):
     def __init__(self):
         return
@@ -454,13 +443,13 @@ class http_parse(object):
         Reconcile an HTTP code to it's overall category eg 404 - Client Error
 
         Args:
-            http_code (int): HTTP code eg 450
+            http_code (int): HTTP code eg 405
 
         Returns:
             str: HTTP Code Category eg 'Client Error'
         '''
         if http_code in range(100, 200):
-            return 'Information'
+            return 'Informational'
         elif http_code in range(200, 300):
             return 'Success'
         elif http_code in range(300, 400):
@@ -505,7 +494,7 @@ class http_parse(object):
         elif http_code == 207:
             return 'Multi-Status'
         elif http_code == 208:
-            return 'Alread Reported'
+            return 'Already Reported'
         elif http_code == 226:
             return 'IM Used'
         elif http_code == 300:
@@ -579,7 +568,7 @@ class http_parse(object):
         elif http_code == 429:
             return 'Too Many Requests'
         elif http_code == 431:
-            return 'Rquest Header Fields Too Large'
+            return 'Request Header Fields Too Large'
         elif http_code == 451:
             return 'Unavailable For Legal Reasons'
         elif http_code == 500:
@@ -597,7 +586,7 @@ class http_parse(object):
         elif http_code == 506:
             return 'Variant Also Negotiates'
         elif http_code == 507:
-            return 'Insuficient Storage'
+            return 'Insufficient Storage'
         elif http_code == 508:
             return 'Loop Detected'
         elif http_code == 510:
@@ -608,8 +597,6 @@ class http_parse(object):
             return 'Other'
 
 ### Netflow v9 Parsers ###
-
-
 class netflowv9_parse(object):
     import struct
     from struct import unpack
@@ -635,8 +622,7 @@ class netflowv9_parse(object):
         '''
         cache = {}
         while pointer < length:
-            (template_id, template_field_count) = self.unpack(
-                '!HH', packed_data[pointer:pointer + 4])
+            (template_id, template_field_count) = self.unpack('!HH', packed_data[pointer:pointer + 4])
             pointer += 4  # Advance the field
 
             hashed_id = hash(str(sensor) + str(template_id))
@@ -649,8 +635,7 @@ class netflowv9_parse(object):
 
             # Iterate through each line in the template
             for _ in range(0, template_field_count):
-                (element, element_length) = self.unpack(
-                    '!HH', packed_data[pointer:pointer + 4])
+                (element, element_length) = self.unpack('!HH', packed_data[pointer:pointer + 4])
                 if element in self.v9_fields:
                     cache[hashed_id]['Definitions'][element] = element_length
                 pointer += 4
@@ -669,8 +654,7 @@ class netflowv9_parse(object):
         Returns:
             dict[Hashed ID]: {Sensor: str, Template ID: int, Type: str, Scope Fields: dict, Option Fields: dict}
         '''
-        (option_template_id, option_scope_length, option_length) = self.unpack(
-            '!HHH', packed_data[pointer:pointer + 6])
+        (option_template_id, option_scope_length, option_length) = self.unpack('!HHH', packed_data[pointer:pointer + 6])
         pointer += 6
 
         cache = {}
@@ -678,22 +662,96 @@ class netflowv9_parse(object):
         hashed_id = hash(str(sensor) + str(option_template_id))
         cache[hashed_id] = {}
         cache[hashed_id]['Sensor'] = str(sensor)
-        cache[hashed_id]['Template_ID'] = option_template_id
+        cache[hashed_id]['Template ID'] = option_template_id
         cache[hashed_id]['Type'] = 'Options Template'
         cache[hashed_id]['Scope Fields'] = self.OrderedDict()
         cache[hashed_id]['Option Fields'] = self.OrderedDict()
 
         for x in range(pointer, pointer + option_scope_length, 4):
-            (scope_field_type, scope_field_length) = self.unpack(
-                '!HH', packed_data[x:x + 4])
+            (scope_field_type, scope_field_length) = self.unpack('!HH', packed_data[x:x + 4])
             cache[hashed_id]['Scope Fields'][scope_field_type] = scope_field_length
+
+        pointer += option_scope_length
+
+        for x in range(pointer, pointer + option_length, 4):
+            (option_field_type, option_field_length) = self.unpack('!HH', packed_data[x:x + 4])
+            cache[hashed_id]['Option Fields'][option_field_type] = option_field_length
 
         pointer += option_length
         return cache
 
 ### Protocol and Port Parsers ###
-
-
 class ports_and_protocols(object):
     # Field types, defined ports, etc
-    pass
+    from defined_ports import registered_ports, other_ports
+    from protocol_numbers import protocol_type
+
+    def __init__(self):
+        return
+
+    # Tag 'Traffic Category' by Protocol classification ('Routing', 'ICMP', etc.)
+    def protocol_traffic_category(self, protocol_number: int) -> str:
+        '''
+        Reconcile protocol numbers to a Category eg 89 to 'Routing'
+
+        Args:
+            protocol_number (int): Traffic type eg 89 to 'Routing'
+
+        Returns:
+            str: Traffic Category eg 'Routing'
+        '''
+        try:
+            return self.protocol_type[protocol_number]['Category']
+        except (NameError, KeyError):
+            return 'Other'
+
+    # Tag traffic by SRC and DST port
+    def port_traffic_classifier(self, src_port: int, dst_port: int) -> dict:
+        '''
+        Reconcile port numbers to services eg TCP/80 to HTTP, and services to categories eg HTTP to Web
+
+        Args:
+            src_port (int): Port number eg '443'
+            dst_port (int): Port number eg '443'
+
+        Returns:
+            dict: ['Traffic': 'HTTP', 'Traffic Category': 'Web'], default value is 'Other' for each.
+        '''
+        traffic = {}
+
+        # SRC Port
+        if src_port in self.registered_ports:
+            traffic['Traffic'] = self.registered_ports[src_port]['Name']
+            if 'Category' in self.registered_ports[src_port]:
+                traffic['Traffic Category'] = self.registered_ports[src_port]['Category']
+        elif src_port in self.other_ports:
+            traffic['Traffic'] = self.other_ports[src_port]['Name']
+            if 'Category' in self.other_ports[src_port]:
+                traffic['Traffic Category'] = self.other_ports[src_port]['Category']
+        else:
+            pass
+
+        # DST Port
+        if dst_port in self.registered_ports:
+            traffic['Traffic'] = self.registered_ports[dst_port]['Name']
+            if 'Category' in self.registered_ports[dst_port]:
+                traffic['Traffic Category'] = self.registered_ports[dst_port]['Category']
+        elif dst_port in self.other_ports:
+            traffic['Traffic'] = self.other_ports[dst_port]['Name']
+            if 'Category' in self.other_ports[dst_port]:
+                traffic['Traffic Category'] = self.other_ports[dst_port]['Category']
+        else:
+            pass
+
+        # Set as 'Other' if not already set
+        try:
+            traffic['Traffic']
+        except (NameError, KeyError):
+            traffic['Traffic'] = 'Other'
+
+        try:
+            traffic['Traffic Category']
+        except (NameError, KeyError):
+            traffic['Traffic Category'] = 'Other'
+
+        return traffic
