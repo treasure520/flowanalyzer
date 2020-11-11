@@ -77,6 +77,6 @@ lookup_internal = False
 # THIS IS A BETA FEATURE, NOT FULLY IMPLEMENTED
 #
 # Set to False if you don't want to enable MAC OUI lookups, otherwise change to True to enable lookups.
-mac_loogup = False
+mac_lookup = False
 
 #### End tuning ####
